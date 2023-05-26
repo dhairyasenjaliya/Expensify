@@ -55,6 +55,8 @@ import Permissions from '../../../libs/Permissions';
 import * as TaskUtils from '../../../libs/actions/Task';
 import * as Browser from '../../../libs/Browser';
 
+import iouReportPropTypes from '../../iouReportPropTypes';
+
 const propTypes = {
     /** Beta features list */
     betas: PropTypes.arrayOf(PropTypes.string),
@@ -116,6 +118,9 @@ const propTypes = {
     /** The type of action that's pending  */
     pendingAction: PropTypes.oneOf(['add', 'update', 'delete']),
 
+    /** The expense report or iou report (only will have a value if this is a transaction thread) */
+    parentReport: iouReportPropTypes,
+
     ...windowDimensionsPropTypes,
     ...withLocalizePropTypes,
     ...withCurrentUserPersonalDetailsPropTypes,
@@ -136,6 +141,7 @@ const defaultProps = {
     pendingAction: null,
     shouldShowComposeInput: true,
     ...withCurrentUserPersonalDetailsDefaultProps,
+    parentReport: {},
 };
 
 const {RNTextInputReset} = NativeModules;
@@ -903,15 +909,19 @@ class ReportActionCompose extends React.Component {
     }
 
     render() {
-        const reportParticipants = _.without(lodashGet(this.props.report, 'participants', []), this.props.currentUserPersonalDetails.login);
+        const reportID = ReportUtils.isThread(this.props.report) ? this.props.parentReport : this.props.report;
+        const reportParticipants = _.without(lodashGet(reportID, 'participants', []), this.props.currentUserPersonalDetails.login);
         const participantsWithoutExpensifyEmails = _.difference(reportParticipants, CONST.EXPENSIFY_EMAILS);
         const reportRecipient = this.props.personalDetails[participantsWithoutExpensifyEmails[0]];
+        // console.log('🚀 ~ reportParticipants:', reportParticipants);
+        // console.log('🚀 ~  ~ this.props.currentUserPersonalDetails.login', this.props.currentUserPersonalDetails.login);
+        // console.log('🚀 ~  ~ isThread', ReportUtils.isThread(this.props.report));
 
-        const shouldShowReportRecipientLocalTime = ReportUtils.canShowReportRecipientLocalTime(this.props.personalDetails, this.props.report) && !this.props.isComposerFullSize;
+        const shouldShowReportRecipientLocalTime = ReportUtils.canShowReportRecipientLocalTime(this.props.personalDetails, reportID) && !this.props.isComposerFullSize;
 
         // Prevents focusing and showing the keyboard while the drawer is covering the chat.
         const isComposeDisabled = this.props.isDrawerOpen && this.props.isSmallScreenWidth;
-        const isBlockedFromConcierge = ReportUtils.chatIncludesConcierge(this.props.report) && User.isBlockedFromConcierge(this.props.blockedFromConcierge);
+        const isBlockedFromConcierge = ReportUtils.chatIncludesConcierge(reportID) && User.isBlockedFromConcierge(this.props.blockedFromConcierge);
         const inputPlaceholder = this.getInputPlaceholder();
         const shouldUseFocusedColor = !isBlockedFromConcierge && !this.props.disabled && (this.state.isFocused || this.state.isDraggingOver);
         const hasExceededMaxCommentLength = this.state.hasExceededMaxCommentLength;
@@ -1251,6 +1261,9 @@ export default compose(
         },
         shouldShowComposeInput: {
             key: ONYXKEYS.SHOULD_SHOW_COMPOSE_INPUT,
+        },
+        parentReport: {
+            key: (props) => `${ONYXKEYS.COLLECTION.REPORT}${props.report.parentReportID}`,
         },
     }),
 )(ReportActionCompose);
