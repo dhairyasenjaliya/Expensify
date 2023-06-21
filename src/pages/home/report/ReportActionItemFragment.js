@@ -149,7 +149,6 @@ function ReportActionItemFragment(props) {
                     <Text
                         numberOfLines={props.isSingleLine ? 1 : undefined}
                         style={[styles.chatItemMessageHeaderSender, props.isSingleLine ? styles.pre : styles.preWrap]}
-                        selectable={false}
                     >
                         {props.fragment.text}
                     </Text>
