@@ -161,7 +161,8 @@ export default [
             reportAction.actionName !== CONST.REPORT.ACTIONS.TYPE.TASKREOPENED &&
             !ReportActionUtils.isCreatedTaskReportAction(reportAction) &&
             !ReportUtils.isReportMessageAttachment(_.last(lodashGet(reportAction, ['message'], [{}]))) &&
-            !ReportActionUtils.isMessageDeleted(reportAction),
+            !ReportActionUtils.isMessageDeleted(reportAction) &&
+            !lodashGet(reportAction, 'originalMessage.moderationDecision', false),
 
         // If return value is true, we switch the `text` and `icon` on
         // `ContextMenuItem` with `successText` and `successIcon` which will fallback to

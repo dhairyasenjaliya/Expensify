@@ -121,7 +121,7 @@ function ReportActionItemFragment(props) {
 
             return (
                 <Text
-                    selectable={!DeviceCapabilities.canUseTouchScreen() || !props.isSmallScreenWidth || props.hasBeenFlagged} //here disable on flaged
+                    selectable={props.hasBeenFlagged ? !props.hasBeenFlagged : !DeviceCapabilities.canUseTouchScreen() || !props.isSmallScreenWidth}
                     style={[containsOnlyEmojis ? styles.onlyEmojisText : undefined, styles.ltr, ...props.style]}
                 >
                     {convertToLTR(text)}
