@@ -29,6 +29,7 @@ const defaultProps = {
 };
 
 function ReportActionItemMessage(props) {
+    console.log('🚀 ~ age ~ props:', props);
     return (
         <View style={[styles.chatItemMessage, ...props.style]}>
             {!props.isHidden ? (
@@ -44,10 +45,16 @@ function ReportActionItemMessage(props) {
                         accountID={props.action.actorAccountID}
                         loading={props.action.isLoading}
                         style={props.style}
+                        hasBeenFlagged={lodashGet(props.action, 'originalMessage.moderationDecision', false)} // her e
                     />
                 ))
             ) : (
-                <Text style={[styles.textLabelSupporting, styles.lh20]}>{props.translate('moderation.flaggedContent')}</Text>
+                <Text
+                    selectable={false}
+                    style={[styles.textLabelSupporting, styles.lh20]}
+                >
+                    {props.translate('moderation.flaggedContent')}
+                </Text>
             )}
         </View>
     );

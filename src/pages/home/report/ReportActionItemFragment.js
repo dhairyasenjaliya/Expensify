@@ -121,7 +121,7 @@ function ReportActionItemFragment(props) {
 
             return (
                 <Text
-                    selectable={!DeviceCapabilities.canUseTouchScreen() || !props.isSmallScreenWidth}
+                    selectable={!DeviceCapabilities.canUseTouchScreen() || !props.isSmallScreenWidth || props.hasBeenFlagged} //here disable on flaged
                     style={[containsOnlyEmojis ? styles.onlyEmojisText : undefined, styles.ltr, ...props.style]}
                 >
                     {convertToLTR(text)}
@@ -149,6 +149,7 @@ function ReportActionItemFragment(props) {
                     <Text
                         numberOfLines={props.isSingleLine ? 1 : undefined}
                         style={[styles.chatItemMessageHeaderSender, props.isSingleLine ? styles.pre : styles.preWrap]}
+                        selectable={false}
                     >
                         {props.fragment.text}
                     </Text>
